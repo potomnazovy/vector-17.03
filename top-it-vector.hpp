@@ -54,6 +54,26 @@ topit::Vector< T >::~Vector()
 }
 
 template< class T >
+topit::Vector< T >::Vector(const Vector< T > & rhs):
+  data_(rhs.getSize() ? new T[rhs.getSize()] : nullptr),
+  size_(rhs.getSize()),
+  capacity_(rhs.getSize())
+{
+  for (size_t i = 0; i < rhs.getSize(); ++i)
+  {
+    try
+    {
+      data_[i] = rhs[i];
+    }
+    catch (...)
+    {
+      delete[] data_;
+      throw;
+    }
+  }
+}
+
+template< class T >
 bool topit::Vector< T >::isEmpty() const noexcept
 {
   return size_ == 0;

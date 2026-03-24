@@ -147,10 +147,18 @@ bool testElementOutOfBoundConstAccess()
   }
 }
 
-bool testCopyConstructor()
+bool testCopyConstructorForEmpty()
 {
   topit::Vector< int > v;
   topit::Vector< int > yav{v};
+  return v == yav;
+}
+
+bool testCopyConstructorForNonEmpty()
+{
+  topit::Vector< int > v;
+  v.push_back(1);
+  topit::Vector< int > yav = v;
   return v == yav;
 }
 
@@ -170,7 +178,9 @@ int main()
     { "Inbound access", testElementAccess },
     { "Out of bound access", testElementOutOfBoundAccess },
     { "Indound const access", testElementConstAccess},
-    { "Out of bound const access", testElementOutOfBoundConstAccess }
+    { "Out of bound const access", testElementOutOfBoundConstAccess },
+    { "Copy empty vector", testCopyConstructorForEmpty },
+    { "Copy non-empty vector", testCopyConstructorForNonEmpty }
   };
 
   const size_t count = sizeof(tests) / sizeof(test_t);
