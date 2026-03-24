@@ -113,6 +113,40 @@ bool testElementOutOfBoundAccess()
   }
 }
 
+bool testElementConstAccess()
+{
+  topit::Vector< int > v;
+  v.push_back(1);
+  const topit::Vector< int >& rv = v;
+  try
+  {
+    const int& val = rv.at(0);
+    return val == 1;
+  }
+  catch(...)
+  {
+    return false; 
+  }
+}
+
+bool testElementOutOfBoundConstAccess()
+{
+  const topit::Vector< int > v;
+  try
+  {
+    v.at(0);
+    return false;
+  }
+  catch(const std::out_of_range&)
+  {
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
@@ -127,7 +161,9 @@ int main()
     { "Pop back on empty", testPopBackOnEmpty },
     { "Multiple push back", testMultiplePushBack },
     { "Inbound access", testElementAccess },
-    { "Out of bound access", testElementOutOfBoundAccess }
+    { "Out of bound access", testElementOutOfBoundAccess },
+    { "Indound const access", testElementConstAccess},
+    { "Out of bound const access", testElementOutOfBoundConstAccess }
   };
 
   const size_t count = sizeof(tests) / sizeof(test_t);
