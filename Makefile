@@ -1,4 +1,4 @@
-CXXFLAGS += -Wall -Wextra -std=c++14 -MMD
+CXXFLAGS += -Wall -Wextra -std=c++14 -MMD -Wno-self-assign-overloaded -Wno-self-move
 
 main: main.o
 	$(CXX) $^ -o $@
