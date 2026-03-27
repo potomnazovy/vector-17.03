@@ -215,6 +215,117 @@ bool testSelfMoveAssignment()
   return v.getSize() == 5 && v.at(0) == 2;
 }
 
+bool testInsert()
+{
+  auto vec = topit::Vector< int >();
+  vec.push_back(1);
+  vec.push_back(2);
+  vec.push_back(3);
+  vec.push_back(4);
+  vec.push_back(5);
+  vec.insert(1, 8);
+  vec.insert(3, 7);
+  vec.insert(5, 12);
+  vec.insert(0, 23);
+  int control[] = {23, 1, 8, 2, 7, 3, 12, 4, 5};
+  bool res = vec.getSize() == 9;
+  for (size_t i = 0; res && i < vec.getSize(); i++)
+  {
+    res = res && (vec[i] == control[i]);
+  }
+  return res;
+}
+
+bool testInsertByRange()
+{
+  topit::Vector< int > vec;
+  vec.push_back(1);
+  vec.push_back(2);
+  vec.push_back(3);
+  vec.push_back(4);
+  vec.push_back(5);
+
+  topit::Vector< int > vec2;
+  vec2.push_back(6);
+  vec2.push_back(7);
+  vec2.push_back(8);
+  vec2.push_back(9);
+  vec2.push_back(10);
+
+  vec2.insert(2, vec, 1, 4);
+  int control[] = {6, 7, 2, 3, 4, 8, 9, 10};
+  
+  bool res = vec2.getSize() == 8;
+  for (size_t i = 0; res && i < vec2.getSize(); i++)
+  {
+    res = res && (vec2[i] == control[i]);
+  }
+
+  try
+  {
+    vec2.insert(7, vec, 0, 100);
+    res = false;
+  }
+  catch (const std::out_of_range&)
+  {}
+
+  return res;
+}
+
+bool testErase()
+{
+  topit::Vector< int > v;
+  v.push_back(1);
+  v.push_back(2);
+  v.push_back(3);
+  v.push_back(4);
+  v.push_back(5);
+  v.erase(2);
+  int control[] = {1, 2, 4, 5};
+  bool res = v.getSize() == 4;
+  for (size_t i = 0; i < v.getSize(); ++i)
+  {
+    res = res && v[i] == control[i];
+  }
+  try
+  {
+    v.erase(100);
+    return false;
+  }
+  catch (const std::out_of_range&)
+  {}
+
+  return res;
+}
+
+bool testEraseByRange()
+{
+  topit::Vector< int > v;
+  v.push_back(1);
+  v.push_back(2);
+  v.push_back(3);
+  v.push_back(4);
+  v.push_back(5);
+  v.push_back(6);
+  v.push_back(7);
+  v.erase(2, 5);
+  int control[] = {1, 2, 6, 7};
+  bool res = v.getSize() == 4;
+  for (size_t i = 0; i < v.getSize(); ++i)
+  {
+    res = res && v[i] == control[i];
+  }
+  try
+  {
+    v.erase(100, 3);
+    return false;
+  }
+  catch (const std::out_of_range&)
+  {}
+
+  return res;
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
@@ -233,21 +344,36 @@ int main()
     { "Indound const access", testElementConstAccess},
     { "Out of bound const access", testElementOutOfBoundConstAccess },
     { "Copy empty vector", testCopyConstructorForEmpty },
-    { "Copy non-empty vector", testCopyConstructorForNonEmpty }
+    { "Copy non-empty vector", testCopyConstructorForNonEmpty },
+    { "Copy move constructor", testMoveConstructor },
+    { "Copy assignment", testCopyAssignment },
+    { "Self assignment", testSelfAssignment },
+    { "Move assignment", testMoveAssignment },
+    { "Move self assignment", testSelfMoveAssignment },
+    { "Insert", testInsert },
+    { "Insert by range", testInsertByRange },
+    { "Erase", testErase },
+    { "Erase by range", testEraseByRange }
   };
 
   const size_t count = sizeof(tests) / sizeof(test_t);
 
   std::cout << std::boolalpha;
+  size_t success = 0;
+  size_t failed = 0;
   bool pass = true;
 
   for (size_t i = 0; i < count; ++i)
   {
     bool res = tests[i].second();
+    success += res;
+    failed += !res;
     std::cout << tests[i].first << ": " << res << '\n';
     pass = pass && res;
   }
 
   std::cout << "RESULT: " << pass << '\n';
+  std::cout << "SUCCESS: " << success << '\n';
+  std::cout << "FAILED: " << failed << '\n';
   return 0;
 }

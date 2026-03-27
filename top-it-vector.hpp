@@ -6,14 +6,6 @@
 #include <new>
 #include <algorithm>
 
-// Классная
-// Тестирование для копирования и перемещения
-// Написать по 2 штуки insert, erase и протестировать (ДЛЯ ДИАПАЗОНА ЗНАЧЕНИЙ) строгая гарантия
-
-// Домашка
-// Итераторы для вектора (произвольного доступа)
-// Придумать несколько insert/erase с итераторами (по 3 штуки) + тесты
-
 namespace topit
 {
   template< class T >
@@ -48,7 +40,7 @@ namespace topit
     void erase(size_t start, size_t end);
 
 
-    template< class FwdIterator > // домашка
+    template< class FwdIterator >
     void insert(VectorIterator pos, FwdIterator begin, FwdIterator end);
 
   private:
