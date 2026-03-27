@@ -44,8 +44,8 @@ namespace topit
     void insert(size_t i, const T& v);
     void erase(size_t i);
 
-    void insert(size_t i, const Vector< T >& rhs, size_t start, size_t end); // классная
-    void erase(size_t start, size_t end); // классная
+    void insert(size_t i, const Vector< T >& rhs, size_t start, size_t end);
+    void erase(size_t start, size_t end);
 
 
     template< class FwdIterator > // домашка
@@ -243,6 +243,227 @@ void topit::Vector< T >::popBack()
   {
     --size_;
     data_[size_].~T();
+  }
+}
+
+template< class T >
+void topit::Vector< T >::insert(size_t i, const T& v)
+{
+  if (i > size_)
+  {
+    throw std::out_of_range("Vector::insert: index out of range");
+  }
+
+  T* temp = static_cast< T* >(operator new(sizeof(T)));
+  bool constructed = false;
+  
+  try
+  {
+    new (temp) T(v);
+    constructed = true;
+
+    if (size_ == cap_)
+    {
+      size_t new_cap = (cap_ == 0) ? 1 : cap_ * 2;
+      grow(new_cap);
+    }
+
+    for (size_t j = size_; j > i; --j)
+    {
+      new (&data_[j]) T(std::move(data_[j-1]));
+      data_[j-1].~T();
+    }
+
+    new (&data_[i]) T(std::move(*temp));
+    temp->~T();
+    operator delete(temp);
+    
+    ++size_;
+    
+  }
+  catch (...)
+  {
+    if (constructed)
+    {
+      temp->~T();
+    }
+    operator delete(temp);
+    throw;
+  }
+}
+
+template< class T >
+void topit::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t start, size_t end)
+{
+  if (i > size_ || start > end || end > rhs.size_)
+  {
+    throw std::out_of_range("Vector::insert: invalid range");
+  }
+  
+  size_t count = end - start;
+  if (count == 0)
+  {
+    return;
+  }
+
+  if (size_ + count > cap_)
+  {
+    size_t new_cap = (cap_ == 0) ? count : std::max(cap_ * 2, size_ + count);
+    grow(new_cap);
+  }
+
+  size_t total = count + (size_ - i);
+  T* buffer = static_cast< T* >(operator new(sizeof(T) * total));
+  size_t constructed = 0;
+  
+  try
+  {
+    for (size_t j = 0; j < count; ++j)
+    {
+      new (&buffer[j]) T(rhs.data_[start + j]);
+      ++constructed;
+    }
+
+    for (size_t j = 0; j < size_ - i; ++j)
+    {
+      new (&buffer[count + j]) T(data_[i + j]);
+      ++constructed;
+    }
+
+    for (size_t j = i; j < size_; ++j)
+    {
+      data_[j].~T();
+    }
+
+    for (size_t j = 0; j < total; ++j)
+    {
+      new (&data_[i + j]) T(buffer[j]);
+      buffer[j].~T();
+    }
+    
+    operator delete(buffer);
+    size_ += count;
+  }
+  catch (...)
+  {
+    for (size_t j = 0; j < constructed; ++j)
+    {
+      buffer[j].~T();
+    }
+    operator delete(buffer);
+    throw;
+  }
+}
+
+template< class T >
+void topit::Vector< T >::erase(size_t i)
+{
+  if (i >= size_)
+  {
+    throw std::out_of_range("Vector::erase: index out of range");
+  }
+  
+  size_t count = size_ - i - 1;
+
+  if (count == 0)
+  {
+    data_[i].~T();
+    --size_;
+    return;
+  }
+
+  T* temp = static_cast< T* >(operator new(sizeof(T) * count));
+  size_t constructed = 0;
+  
+  try
+  {
+    for (size_t j = 0; j < count; ++j)
+    {
+      new (&temp[j]) T(data_[i + 1 + j]);
+      ++constructed;
+    }
+
+    data_[i].~T();
+
+    for (size_t j = 0; j < count; ++j)
+    {
+      new (&data_[i + j]) T(temp[j]);
+      temp[j].~T();
+      data_[i + 1 + j].~T();
+    }
+    
+    operator delete(temp);
+    --size_;
+  }
+  catch (...)
+  {
+    for (size_t j = 0; j < constructed; ++j)
+    {
+      temp[j].~T();
+    }
+    operator delete(temp);
+    throw;
+  }
+}
+
+template< class T >
+void topit::Vector< T >::erase(size_t start, size_t end)
+{
+  if (start > end || end > size_)
+  {
+    throw std::out_of_range("Vector::erase: invalid range");
+  }
+  
+  size_t count = end - start;
+  if (count == 0)
+  {
+    return;
+  }
+
+  if (end == size_)
+  {
+    for (size_t j = start; j < end; ++j)
+    {
+      data_[j].~T();
+    }
+    size_ = start;
+    return;
+  }
+
+  size_t save_count = size_ - end;
+  T* buffer = static_cast< T* >(operator new(sizeof(T) * save_count));
+  size_t constructed = 0;
+  
+  try
+  {
+    for (size_t j = 0; j < save_count; ++j)
+    {
+      new (&buffer[j]) T(data_[end + j]);
+      ++constructed;
+    }
+
+    for (size_t j = start; j < size_; ++j)
+    {
+      data_[j].~T();
+    }
+
+    for (size_t j = 0; j < save_count; ++j)
+    {
+      new (&data_[start + j]) T(buffer[j]);
+      buffer[j].~T();
+    }
+    
+    operator delete(buffer);
+    size_ -= count;
+  }
+  catch (...)
+  {
+    for (size_t j = 0; j < constructed; ++j)
+    {
+      buffer[j].~T();
+    }
+    operator delete(buffer);
+    throw;
   }
 }
 
