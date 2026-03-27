@@ -169,6 +169,52 @@ bool testCopyConstructorForNonEmpty()
   }
 }
 
+bool testMoveConstructor()
+{
+  topit::Vector< int > v{5, 2};
+  topit::Vector< int > yav{std::move(v)};
+  return yav.getSize() == 5 && v.isEmpty();
+}
+
+bool testCopyAssignment()
+{
+  topit::Vector< int > v{5, 2};
+  topit::Vector< int > yav{2, 5};
+  topit::Vector< int > temp{};
+
+  temp = yav;
+  yav = v;
+  v = temp;
+
+  bool test1 = v.getSize() == 2;
+  bool test2 = yav.getSize() == 5;
+  bool test3 = v.at(0) == 5;
+  bool test4 = yav.at(0) == 2;
+  return test1 && test2 && test3 && test4;
+}
+
+bool testSelfAssignment()
+{
+  topit::Vector< int > v{5, 2};
+  v = v;
+  return v.getSize() == 5 && v.at(0) == 2;
+}
+
+bool testMoveAssignment()
+{
+  topit::Vector< int > v{5, 2};
+  topit::Vector< int > yav{4, 3};
+  yav = std::move(v);
+  return yav.getSize() == 5 && yav.at(0) == 2 && v.isEmpty();
+}
+
+bool testSelfMoveAssignment()
+{
+  topit::Vector< int > v{5, 2};
+  v = std::move(v);
+  return v.getSize() == 5 && v.at(0) == 2;
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
