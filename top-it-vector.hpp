@@ -204,28 +204,50 @@ template < class T >
 void topit::Vector< T >::grow(size_t new_cap)
 {
   T* new_data = static_cast< T* >(operator new(sizeof(T) * new_cap));
-
-  for (size_t i = 0; i < size_; ++i)
+  size_t constructed = 0;
+  try
   {
-    new (&new_data[i]) T(std::move(data_[i]));
-    data_[i].~T();
+    for (size_t i = 0; i < size_; ++i)
+    {
+      new (&new_data[i]) T(std::move(data_[i]));
+      ++constructed;
+    }
+
+    for (size_t i = 0; i < size_; ++i)
+    {
+      data_[i].~T();
+    }
+
+    operator delete(data_);
+    data_ = new_data;
+    cap_ = new_cap;
   }
-  operator delete(data_);
-  data_ = new_data;
-  cap_ = new_cap;
+  catch(...)
+  {
+    for (size_t i = 0; i < constructed; ++i)
+    {
+      new_data[i].~T();
+    }
+    operator delete(new_data);
+    throw;
+  }
 }
 
 template< class T >
 void topit::Vector< T >::push_back(const T& value)
 {
-  if (size_ == cap_)
+  Vector< T > temp = *this;
+
+  if (temp.size_ == temp.cap_)
   {
-    size_t new_cap = (cap_ == 0) ? 1 : cap_ * 2;
-    grow(new_cap);
+    size_t new_cap = (temp.cap_ == 0) ? 1 : temp.cap_ * 2;
+    temp.grow(new_cap);
   }
 
-  new (&data_[size_]) T(value);
-  ++size_;
+  new (&temp.data_[temp.size_]) T(value);
+  ++temp.size_;
+
+  swap(temp);
 }
 
 template< class T >
