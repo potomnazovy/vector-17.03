@@ -243,45 +243,27 @@ void topit::Vector< T >::insert(size_t i, const T& v)
 {
   if (i > size_)
   {
-    throw std::out_of_range("Vector::insert: index out of range");
+    throw std::out_of_range("Too much");
   }
 
-  T* temp = static_cast< T* >(operator new(sizeof(T)));
-  bool constructed = false;
-  
-  try
+  Vector< T > temp = *this;
+
+  if (temp.size_ == temp.cap_)
   {
-    new (temp) T(v);
-    constructed = true;
-
-    if (size_ == cap_)
-    {
-      size_t new_cap = (cap_ == 0) ? 1 : cap_ * 2;
-      grow(new_cap);
-    }
-
-    for (size_t j = size_; j > i; --j)
-    {
-      new (&data_[j]) T(std::move(data_[j-1]));
-      data_[j-1].~T();
-    }
-
-    new (&data_[i]) T(std::move(*temp));
-    temp->~T();
-    operator delete(temp);
-    
-    ++size_;
-    
+    size_t new_cap = (temp.cap_ == 0) ? 1 : temp.cap_ * 2;
+    temp.grow(new_cap);
   }
-  catch (...)
+
+  for (size_t j = temp.size_; j > i; --j)
   {
-    if (constructed)
-    {
-      temp->~T();
-    }
-    operator delete(temp);
-    throw;
+    new (&temp.data_[j]) T(std::move(temp.data_[j - 1]));
+    temp.data_[j - 1].~T();
   }
+
+  new (&temp.data_[i]) T(v);
+  ++temp.size_;
+
+  swap(temp);
 }
 
 template< class T >
@@ -289,7 +271,7 @@ void topit::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t start, 
 {
   if (i > size_ || start > end || end > rhs.size_)
   {
-    throw std::out_of_range("Vector::insert: invalid range");
+    throw std::out_of_range("Too much");
   }
   
   size_t count = end - start;
@@ -298,53 +280,28 @@ void topit::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t start, 
     return;
   }
 
-  if (size_ + count > cap_)
+  Vector< T > temp = *this;
+
+  if (temp.size_ + count > temp.cap_)
   {
-    size_t new_cap = (cap_ == 0) ? count : std::max(cap_ * 2, size_ + count);
-    grow(new_cap);
+    size_t new_cap = (temp.cap_ == 0) ? count : std::max(temp.cap_ * 2, temp.size_ + count);
+    temp.grow(new_cap);
   }
 
-  size_t total = count + (size_ - i);
-  T* buffer = static_cast< T* >(operator new(sizeof(T) * total));
-  size_t constructed = 0;
+  for (size_t j = temp.size_; j > i; --j)
+  {
+    new (&temp.data_[j + count - 1]) T(std::move(temp.data_[j - 1]));
+    temp.data_[j - 1].~T();
+  }
+
+  for (size_t j = 0; j < count; ++j)
+  {
+    new (&temp.data_[i + j]) T(rhs.data_[start + j]);
+  }
   
-  try
-  {
-    for (size_t j = 0; j < count; ++j)
-    {
-      new (&buffer[j]) T(rhs.data_[start + j]);
-      ++constructed;
-    }
+  temp.size_ += count;
 
-    for (size_t j = 0; j < size_ - i; ++j)
-    {
-      new (&buffer[count + j]) T(data_[i + j]);
-      ++constructed;
-    }
-
-    for (size_t j = i; j < size_; ++j)
-    {
-      data_[j].~T();
-    }
-
-    for (size_t j = 0; j < total; ++j)
-    {
-      new (&data_[i + j]) T(buffer[j]);
-      buffer[j].~T();
-    }
-    
-    operator delete(buffer);
-    size_ += count;
-  }
-  catch (...)
-  {
-    for (size_t j = 0; j < constructed; ++j)
-    {
-      buffer[j].~T();
-    }
-    operator delete(buffer);
-    throw;
-  }
+  swap(temp);
 }
 
 template< class T >
@@ -352,50 +309,24 @@ void topit::Vector< T >::erase(size_t i)
 {
   if (i >= size_)
   {
-    throw std::out_of_range("Vector::erase: index out of range");
+    throw std::out_of_range("Too much");
   }
-  
-  size_t count = size_ - i - 1;
 
-  if (count == 0)
+  Vector< T > temp(size_ - 1);
+
+  for (size_t j = 0; j < i; ++j)
   {
-    data_[i].~T();
-    --size_;
-    return;
+    new (&temp.data_[j]) T(data_[j]);
   }
 
-  T* temp = static_cast< T* >(operator new(sizeof(T) * count));
-  size_t constructed = 0;
-  
-  try
+  for (size_t j = i + 1; j < size_; ++j)
   {
-    for (size_t j = 0; j < count; ++j)
-    {
-      new (&temp[j]) T(data_[i + 1 + j]);
-      ++constructed;
-    }
-
-    data_[i].~T();
-
-    for (size_t j = 0; j < count; ++j)
-    {
-      new (&data_[i + j]) T(temp[j]);
-      temp[j].~T();
-      data_[i + 1 + j].~T();
-    }
-    
-    operator delete(temp);
-    --size_;
+    new (&temp.data_[j - 1]) T(data_[j]);
   }
-  catch (...)
-  {
-    for (size_t j = 0; j < constructed; ++j)
-    {
-      temp[j].~T();
-    }
-    operator delete(temp);
-    throw;
-  }
+
+  temp.size_ = size_ - 1;
+
+  swap(temp);
 }
 
 template< class T >
@@ -403,7 +334,7 @@ void topit::Vector< T >::erase(size_t start, size_t end)
 {
   if (start > end || end > size_)
   {
-    throw std::out_of_range("Vector::erase: invalid range");
+    throw std::out_of_range("Too much");
   }
   
   size_t count = end - start;
@@ -412,51 +343,21 @@ void topit::Vector< T >::erase(size_t start, size_t end)
     return;
   }
 
-  if (end == size_)
+  Vector< T > temp(size_ - count);
+
+  for (size_t j = 0; j < start; ++j)
   {
-    for (size_t j = start; j < end; ++j)
-    {
-      data_[j].~T();
-    }
-    size_ = start;
-    return;
+    new (&temp.data_[j]) T(data_[j]);
   }
 
-  size_t save_count = size_ - end;
-  T* buffer = static_cast< T* >(operator new(sizeof(T) * save_count));
-  size_t constructed = 0;
+  for (size_t j = end; j < size_; ++j)
+  {
+    new (&temp.data_[j - count]) T(data_[j]);
+  }
   
-  try
-  {
-    for (size_t j = 0; j < save_count; ++j)
-    {
-      new (&buffer[j]) T(data_[end + j]);
-      ++constructed;
-    }
+  temp.size_ = size_ - count;
 
-    for (size_t j = start; j < size_; ++j)
-    {
-      data_[j].~T();
-    }
-
-    for (size_t j = 0; j < save_count; ++j)
-    {
-      new (&data_[start + j]) T(buffer[j]);
-      buffer[j].~T();
-    }
-    
-    operator delete(buffer);
-    size_ -= count;
-  }
-  catch (...)
-  {
-    for (size_t j = 0; j < constructed; ++j)
-    {
-      buffer[j].~T();
-    }
-    operator delete(buffer);
-    throw;
-  }
+  swap(temp);
 }
 
 template< class T >
