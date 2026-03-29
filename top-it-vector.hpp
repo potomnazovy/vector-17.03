@@ -384,6 +384,63 @@ void topit::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t start, 
 }
 
 template< class T >
+topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, const T& value)
+{
+  size_t index = pos - begin();
+  insert(index, value);
+  return begin() + index;
+}
+
+template< class T >
+template< class FwdIterator >
+topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, FwdIterator first, FwdIterator last)
+{
+  size_t index = pos - begin();
+
+  size_t count = 0;
+  for (FwdIterator it = first; it != last; ++it)
+  {
+    ++count;
+  }
+
+  if (count == 0)
+  {
+    return begin() + index;
+  }
+
+  Vector< T > tmp = *this;
+
+  if (tmp.size_ == tmp.cap_)
+  {
+    size_t new_cap = (tmp.cap_ == 0) ? 1 : std::max(tmp.cap_ * 2, tmp.size_ + count);
+    tmp.grow(new_cap);
+  }
+
+  for (size_t j = tmp.size_; j > index; ++j)
+  {
+    new (&tmp.data_[j + count - 1]) T(std::move(tmp.data_[j - 1]));
+    tmp.data_[j - 1].~T();
+  }
+
+  for (size_t j = 0; j < count; ++j)
+  {
+    new (&tmp.data_[index + j]) T(*first);
+    ++first;
+  }
+
+  tmp.size_ += count;
+  swap(tmp);
+
+  return begin() + index;
+}
+
+template< class T >
+topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, std::initializer_list< T > init)
+{
+  return insert(pos, init.begin(), init.end());
+}
+
+template< class T >
 void topit::Vector< T >::erase(size_t i)
 {
   if (i >= size_)
