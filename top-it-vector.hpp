@@ -410,13 +410,13 @@ topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, FwdI
 
   Vector< T > tmp = *this;
 
-  if (tmp.size_ == tmp.cap_)
+  if (tmp.size_ + count > tmp.cap_)
   {
-    size_t new_cap = (tmp.cap_ == 0) ? 1 : std::max(tmp.cap_ * 2, tmp.size_ + count);
+    size_t new_cap = (tmp.cap_ == 0) ? count : std::max(tmp.cap_ * 2, tmp.size_ + count);
     tmp.grow(new_cap);
   }
 
-  for (size_t j = tmp.size_; j > index; ++j)
+  for (size_t j = tmp.size_; j > index; --j)
   {
     new (&tmp.data_[j + count - 1]) T(std::move(tmp.data_[j - 1]));
     tmp.data_[j - 1].~T();
@@ -494,6 +494,51 @@ void topit::Vector< T >::erase(size_t start, size_t end)
   temp.size_ = size_ - count;
 
   swap(temp);
+}
+
+template< class T >
+topit::Vector< T >::iterator topit::Vector< T >::erase(const_iterator pos)
+{
+  size_t index = pos - begin();
+  erase(index);
+  return begin() + index;
+}
+
+template< class T >
+topit::Vector< T >::iterator topit::Vector< T >::erase(const_iterator first, const_iterator last)
+{
+  size_t start = first - begin();
+  size_t end = last - begin();
+  erase(start, end);
+  return begin() + start;
+}
+
+template< class T >
+template< class P >
+topit::Vector< T >::iterator topit::Vector< T >::remove_if(P p)
+{
+  size_t write = 0;
+
+  for (size_t read = 0; read < size_; ++read)
+  {
+    if (!p(data_[read]))
+    {
+      if (write != read)
+      {
+        data_[write] = std::move(data_[read]);
+      }
+      ++write;
+    }
+  }
+
+  for (size_t i = write; i < size_; ++i)
+  {
+    data_[i].~T();
+  }
+
+  size_ = write;
+
+  return begin() + write;
 }
 
 template< class T >
