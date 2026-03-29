@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <new>
 #include <algorithm>
+#include <initializer_list>
 #include "VIter.hpp"
 
 namespace topit
@@ -161,6 +162,42 @@ topit::Vector< T >& topit::Vector< T >::operator=(Vector< T >&& rhs) noexcept
   Vector< T > cpy(std::move(rhs));
   swap(cpy);
   return *this;
+}
+
+template< class T >
+topit::Vector< T >::iterator topit::Vector< T >::begin() noexcept
+{
+  return iterator(data_);
+}
+
+template< class T >
+topit::Vector< T >::iterator topit::Vector< T >::end() noexcept
+{
+  return iterator(data_ + size_);
+}
+
+template< class T >
+topit::Vector< T >::const_iterator topit::Vector< T >::begin() const noexcept
+{
+  return const_iterator(data_);
+}
+
+template< class T >
+topit::Vector< T >::const_iterator topit::Vector< T >::end() const noexcept
+{
+  return const_iterator(data_ + size_);
+}
+
+template< class T >
+topit::Vector< T >::const_iterator topit::Vector< T >::cbegin() const noexcept
+{
+  return const_iterator(data_);
+}
+
+template< class T >
+topit::Vector< T >::const_iterator topit::Vector< T >::cend() const noexcept
+{
+  return const_iterator(data_ + size_);
 }
 
 template< class T >
