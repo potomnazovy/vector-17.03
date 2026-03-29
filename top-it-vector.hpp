@@ -25,6 +25,13 @@ namespace topit
     Vector< T >& operator=(const Vector< T >&);
     Vector< T >& operator=(Vector< T >&&) noexcept;
 
+    iterator begin() noexcept;
+    iterator end() noexcept;
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
+
     void swap(Vector< T >& rhs) noexcept;
 
     bool isEmpty() const noexcept;
@@ -38,15 +45,23 @@ namespace topit
 
     void push_back(const T& value);
     void popBack();
-    void insert(size_t i, const T& v);
-    void erase(size_t i);
 
+    void insert(size_t i, const T& v);
     void insert(size_t i, const Vector< T >& rhs, size_t start, size_t end);
+
+    iterator insert(const_iterator pos, const T& value);
+    template< class FwdIterator >
+    iterator insert(const_iterator pos, FwdIterator first, FwdIterator last);
+    iterator insert(const_iterator pos, std::initializer_list< T > init);
+
+    void erase(size_t i);
     void erase(size_t start, size_t end);
 
+    iterator erase(const_iterator pos);
+    iterator erase(const_iterator first, const_iterator last);
 
-    template< class FwdIterator >
-    void insert(iterator pos, FwdIterator begin, FwdIterator end);
+    template< class P >
+    iterator remove_if(P p);
 
   private:
     T* data_;
