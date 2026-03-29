@@ -5,12 +5,17 @@
 #include <stdexcept>
 #include <new>
 #include <algorithm>
+#include "VIter.hpp"
 
 namespace topit
 {
   template< class T >
   struct Vector
   {
+
+    using iterator = VectorIterator< T >;
+    using const_iterator = VectorIterator< const T >;
+
     Vector();
     ~Vector();
     Vector(size_t size, const T& init);
@@ -41,7 +46,7 @@ namespace topit
 
 
     template< class FwdIterator >
-    void insert(VectorIterator pos, FwdIterator begin, FwdIterator end);
+    void insert(iterator pos, FwdIterator begin, FwdIterator end);
 
   private:
     T* data_;

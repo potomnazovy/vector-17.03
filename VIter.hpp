@@ -12,6 +12,9 @@ namespace topit
   {
   public:
     explicit VectorIterator(T* ptr) noexcept;
+
+    template< class U >
+    VectorIterator(const VectorIterator< U >& other) noexcept;
     
     T& operator*() const noexcept;
     T* operator->() const noexcept;
@@ -38,12 +41,20 @@ namespace topit
   private:
     T* ptr_;
     friend class Vector< T >;
+    template< class U >
+    friend class VectorIterator;
   };
 }
 
 template< class T >
 topit::VectorIterator< T >::VectorIterator(T* ptr) noexcept:
   ptr_(ptr)
+{}
+
+template< class T >
+template< class U >
+topit::VectorIterator< T >::VectorIterator(const VectorIterator< U >& other) noexcept:
+  ptr_(other.ptr_)
 {}
 
 template< class T >
