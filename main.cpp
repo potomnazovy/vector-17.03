@@ -531,6 +531,7 @@ bool testRemoveIfAll()
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
+
   test_t tests[] =
   {
     { "Empty vector", testEmptyVector },
@@ -555,12 +556,30 @@ int main()
     { "Insert", testInsert },
     { "Insert by range", testInsertByRange },
     { "Erase", testErase },
-    { "Erase by range", testEraseByRange }
+    { "Erase by range", testEraseByRange },
+    { "Insert iterator single", testInsertIteratorSingle },
+    { "Insert iterator begin", testInsertIteratorBegin },
+    { "Insert iterator end", testInsertIteratorEnd },
+    { "Insert iterator range", testInsertIteratorRange },
+    { "Insert iterator range empty", testInsertIteratorRangeEmpty },
+    { "Insert initializer_list", testInsertInitializerList },
+    { "Insert from std::vector", testInsertFromStdVector },
+    { "Insert from array", testInsertFromArray },
+    { "Erase iterator single", testEraseIteratorSingle },
+    { "Erase iterator begin", testEraseIteratorBegin },
+    { "Erase iterator end", testEraseIteratorEnd },
+    { "Erase iterator range", testEraseIteratorRange },
+    { "Erase iterator all", testEraseIteratorAll },
+    { "Erase iterator empty range", testEraseIteratorEmpty },
+    { "Erase iterator return", testEraseIteratorReturn },
+    { "Remove if even", testRemoveIfEven },
+    { "Remove if all", testRemoveIfAll },
   };
 
   const size_t count = sizeof(tests) / sizeof(test_t);
 
   std::cout << std::boolalpha;
+
   size_t success = 0;
   size_t failed = 0;
   bool pass = true;
