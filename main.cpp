@@ -506,6 +506,28 @@ bool testEraseIteratorReturn()
   return res;
 }
 
+bool testRemoveIfEven()
+{
+  topit::Vector< int > v{6, 1};
+  v[1] = 2;
+  v[3] = 4;
+  v[5] = 6;
+  
+  v.remove_if([](int x) { return x % 2 == 0; });
+
+  topit::Vector< int > yav{3, 1};
+  
+  return v == yav;
+}
+
+bool testRemoveIfAll()
+{
+  topit::Vector< int > v{4, 2};
+  v.remove_if([](int x) { return x % 2 == 0; });
+  
+  return v.isEmpty();
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
