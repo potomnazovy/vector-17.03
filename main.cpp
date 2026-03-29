@@ -326,6 +326,117 @@ bool testEraseByRange()
   return res;
 }
 
+bool testInsertIteratorSingle()
+{
+  topit::Vector< int > v{5, 2};
+  auto it = v.begin() + 2;
+
+  auto ret = v.insert(it, 52);
+
+  topit::Vector< int > yav{2, 2};
+  yav.push_back(52);
+  yav.push_back(2);
+  yav.push_back(2);
+  yav.push_back(2);
+
+  bool res = (v == yav);
+  res = res && (*ret == 52);
+
+  return res;
+}
+
+bool testInsertIteratorBegin()
+{
+  topit::Vector< int > v{3, 2};
+  v.insert(v.begin(), 1);
+
+  topit::Vector< int > yav{3, 2};
+  yav.insert(0, 1);
+  
+  return v == yav;
+}
+
+bool testInsertIteratorEnd()
+{
+  topit::Vector< int > v{3, 2};
+  v.insert(v.end(), 99);
+
+  topit::Vector< int > yav{3, 2};
+  yav.push_back(99);
+  
+  return v == yav;
+}
+
+bool testInsertIteratorRange()
+{
+  topit::Vector< int > v{3, 1};
+
+  topit::Vector< int > src{2, 5};
+
+  v.insert(v.begin() + 1, src.begin(), src.end());
+
+  topit::Vector< int > yav{3, 1};
+  yav.insert(1, src, 0, src.getSize());
+
+  return v == yav;
+}
+
+bool testInsertIteratorRangeEmpty()
+{
+  topit::Vector< int > v{3, 2};
+  topit::Vector< int > src;
+  
+  v.insert(v.begin(), src.begin(), src.end());
+
+  topit::Vector< int > yav{3, 2};
+
+  return v == yav;
+}
+
+bool testInsertInitializerList()
+{
+
+  topit::Vector< int > v{3, 1};
+  v.insert(v.begin() + 1, {10, 20, 30});
+
+  topit::Vector< int > yav{3, 1};
+  yav.insert(1, 10);
+  yav.insert(2, 20);
+  yav.insert(3, 30);
+  
+  return v == yav;
+}
+
+bool testInsertFromStdVector()
+{
+  topit::Vector< int > v{3, 1};
+  std::vector< int > src{10, 20, 30};
+  
+  v.insert(v.begin() + 1, src.begin(), src.end());
+
+  topit::Vector< int > yav{3, 1};
+  yav.insert(1, 10);
+  yav.insert(2, 20);
+  yav.insert(3, 30);
+  
+  return v == yav;
+}
+
+bool testInsertFromArray()
+{
+  topit::Vector< int > v{3, 1};
+  int arr[] = {10, 20, 30};
+  
+  v.insert(v.begin() + 1, arr, arr + 3);
+
+  topit::Vector< int > yav{3, 1};
+  yav.insert(1, 10);
+  yav.insert(2, 20);
+  yav.insert(3, 30);
+  
+  return v == yav;
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
