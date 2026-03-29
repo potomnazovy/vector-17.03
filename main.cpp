@@ -437,6 +437,75 @@ bool testInsertFromArray()
   return v == yav;
 }
 
+bool testEraseIteratorSingle()
+{
+  topit::Vector< int > v{5, 2};
+  v.erase(v.begin() + 2);
+
+  topit::Vector< int > yav{4, 2};
+
+  return v == yav;
+}
+
+bool testEraseIteratorBegin()
+{
+  topit::Vector< int > v{3, 5};
+  v.erase(v.begin());
+
+  topit::Vector< int > yav{2, 5};
+  
+  return v == yav;
+}
+
+bool testEraseIteratorEnd()
+{
+  topit::Vector< int > v{3, 5};
+  v.erase(v.end() - 1);
+
+  topit::Vector< int > yav{2, 5};
+  
+  return v == yav;
+}
+
+bool testEraseIteratorRange()
+{
+  topit::Vector< int > v{5, 2};
+  v.erase(v.begin() + 1, v.begin() + 4);
+
+  topit::Vector< int > yav{2, 2};
+  
+  return v == yav;
+}
+
+bool testEraseIteratorAll()
+{
+  topit::Vector< int > v{3, 5};
+  v.erase(v.begin(), v.end());
+
+  return v.isEmpty();
+}
+
+bool testEraseIteratorEmpty()
+{
+  topit::Vector< int > v{3, 5};
+  v.erase(v.begin(), v.begin());
+
+  topit::Vector< int > yav{3, 5};
+
+  return v == yav;
+}
+
+bool testEraseIteratorReturn()
+{
+  topit::Vector< int > v{5, 2};
+  auto ret = v.erase(v.begin() + 2);
+
+  bool res = (*ret == 2);
+  res = res && (ret - v.begin() == 2);
+
+  return res;
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
