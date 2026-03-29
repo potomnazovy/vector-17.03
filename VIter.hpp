@@ -40,7 +40,7 @@ namespace topit
 
   private:
     T* ptr_;
-    friend class Vector< T >;
+    friend struct Vector< T >;
     template< class U >
     friend class VectorIterator;
   };

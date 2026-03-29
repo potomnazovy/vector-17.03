@@ -165,37 +165,37 @@ topit::Vector< T >& topit::Vector< T >::operator=(Vector< T >&& rhs) noexcept
 }
 
 template< class T >
-topit::Vector< T >::iterator topit::Vector< T >::begin() noexcept
+typename topit::Vector< T >::iterator topit::Vector< T >::begin() noexcept
 {
   return iterator(data_);
 }
 
 template< class T >
-topit::Vector< T >::iterator topit::Vector< T >::end() noexcept
+typename topit::Vector< T >::iterator topit::Vector< T >::end() noexcept
 {
   return iterator(data_ + size_);
 }
 
 template< class T >
-topit::Vector< T >::const_iterator topit::Vector< T >::begin() const noexcept
+typename topit::Vector< T >::const_iterator topit::Vector< T >::begin() const noexcept
 {
   return const_iterator(data_);
 }
 
 template< class T >
-topit::Vector< T >::const_iterator topit::Vector< T >::end() const noexcept
+typename topit::Vector< T >::const_iterator topit::Vector< T >::end() const noexcept
 {
   return const_iterator(data_ + size_);
 }
 
 template< class T >
-topit::Vector< T >::const_iterator topit::Vector< T >::cbegin() const noexcept
+typename topit::Vector< T >::const_iterator topit::Vector< T >::cbegin() const noexcept
 {
   return const_iterator(data_);
 }
 
 template< class T >
-topit::Vector< T >::const_iterator topit::Vector< T >::cend() const noexcept
+typename topit::Vector< T >::const_iterator topit::Vector< T >::cend() const noexcept
 {
   return const_iterator(data_ + size_);
 }
@@ -384,7 +384,7 @@ void topit::Vector< T >::insert(size_t i, const Vector< T >& rhs, size_t start, 
 }
 
 template< class T >
-topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, const T& value)
+typename topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, const T& value)
 {
   size_t index = pos - begin();
   insert(index, value);
@@ -393,7 +393,7 @@ topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, cons
 
 template< class T >
 template< class FwdIterator >
-topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, FwdIterator first, FwdIterator last)
+typename topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, FwdIterator first, FwdIterator last)
 {
   size_t index = pos - begin();
 
@@ -435,7 +435,7 @@ topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, FwdI
 }
 
 template< class T >
-topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, std::initializer_list< T > init)
+typename topit::Vector< T >::iterator topit::Vector< T >::insert(const_iterator pos, std::initializer_list< T > init)
 {
   return insert(pos, init.begin(), init.end());
 }
@@ -497,7 +497,7 @@ void topit::Vector< T >::erase(size_t start, size_t end)
 }
 
 template< class T >
-topit::Vector< T >::iterator topit::Vector< T >::erase(const_iterator pos)
+typename topit::Vector< T >::iterator topit::Vector< T >::erase(const_iterator pos)
 {
   size_t index = pos - begin();
   erase(index);
@@ -505,7 +505,7 @@ topit::Vector< T >::iterator topit::Vector< T >::erase(const_iterator pos)
 }
 
 template< class T >
-topit::Vector< T >::iterator topit::Vector< T >::erase(const_iterator first, const_iterator last)
+typename topit::Vector< T >::iterator topit::Vector< T >::erase(const_iterator first, const_iterator last)
 {
   size_t start = first - begin();
   size_t end = last - begin();
@@ -515,7 +515,7 @@ topit::Vector< T >::iterator topit::Vector< T >::erase(const_iterator first, con
 
 template< class T >
 template< class P >
-topit::Vector< T >::iterator topit::Vector< T >::remove_if(P p)
+typename topit::Vector< T >::iterator topit::Vector< T >::remove_if(P p)
 {
   size_t write = 0;
 
