@@ -171,15 +171,15 @@ bool testCopyConstructorForNonEmpty()
 
 bool testMoveConstructor()
 {
-  topit::Vector< int > v{5, 2};
-  topit::Vector< int > yav{std::move(v)};
+  topit::Vector< int > v(5, 2);
+  topit::Vector< int > yav(std::move(v));
   return yav.getSize() == 5 && v.isEmpty();
 }
 
 bool testCopyAssignment()
 {
-  topit::Vector< int > v{5, 2};
-  topit::Vector< int > yav{2, 5};
+  topit::Vector< int > v(5, 2);
+  topit::Vector< int > yav(2, 5);
   topit::Vector< int > temp{};
 
   temp = yav;
@@ -195,22 +195,22 @@ bool testCopyAssignment()
 
 bool testSelfAssignment()
 {
-  topit::Vector< int > v{5, 2};
+  topit::Vector< int > v(5, 2);
   v = v;
   return v.getSize() == 5 && v.at(0) == 2;
 }
 
 bool testMoveAssignment()
 {
-  topit::Vector< int > v{5, 2};
-  topit::Vector< int > yav{4, 3};
+  topit::Vector< int > v(5, 2);
+  topit::Vector< int > yav(4, 3);
   yav = std::move(v);
   return yav.getSize() == 5 && yav.at(0) == 2 && v.isEmpty();
 }
 
 bool testSelfMoveAssignment()
 {
-  topit::Vector< int > v{5, 2};
+  topit::Vector< int > v(5, 2);
   v = std::move(v);
   return v.getSize() == 5 && v.at(0) == 2;
 }
@@ -328,20 +328,17 @@ bool testEraseByRange()
 
 bool testInsertIteratorSingle()
 {
-  topit::Vector< int > v{5, 2};
+  topit::Vector<int> v{5, 2};
   auto it = v.begin() + 2;
-
+  
   auto ret = v.insert(it, 52);
 
-  topit::Vector< int > yav{2, 2};
+  topit::Vector<int> yav{5, 2};
   yav.push_back(52);
-  yav.push_back(2);
-  yav.push_back(2);
-  yav.push_back(2);
-
+  
   bool res = (v == yav);
   res = res && (*ret == 52);
-
+  
   return res;
 }
 
@@ -440,9 +437,10 @@ bool testInsertFromArray()
 bool testEraseIteratorSingle()
 {
   topit::Vector< int > v{5, 2};
-  v.erase(v.begin() + 2);
+  v.erase(v.begin() + 1);
 
-  topit::Vector< int > yav{4, 2};
+  topit::Vector< int > yav{5, 2};
+  yav.popBack();
 
   return v == yav;
 }
@@ -452,7 +450,8 @@ bool testEraseIteratorBegin()
   topit::Vector< int > v{3, 5};
   v.erase(v.begin());
 
-  topit::Vector< int > yav{2, 5};
+  topit::Vector< int > yav{3, 5};
+  yav.erase(0);
   
   return v == yav;
 }
@@ -462,7 +461,8 @@ bool testEraseIteratorEnd()
   topit::Vector< int > v{3, 5};
   v.erase(v.end() - 1);
 
-  topit::Vector< int > yav{2, 5};
+  topit::Vector< int > yav{3, 5};
+  yav.popBack();
   
   return v == yav;
 }
@@ -470,9 +470,10 @@ bool testEraseIteratorEnd()
 bool testEraseIteratorRange()
 {
   topit::Vector< int > v{5, 2};
-  v.erase(v.begin() + 1, v.begin() + 4);
+  v.erase(v.begin(), v.begin() + 1);
 
-  topit::Vector< int > yav{2, 2};
+  topit::Vector< int > yav{5, 2};
+  yav.erase(0);
   
   return v == yav;
 }
@@ -498,10 +499,10 @@ bool testEraseIteratorEmpty()
 bool testEraseIteratorReturn()
 {
   topit::Vector< int > v{5, 2};
-  auto ret = v.erase(v.begin() + 2);
+  auto ret = v.erase(v.begin() + 1);
 
-  bool res = (*ret == 2);
-  res = res && (ret - v.begin() == 2);
+  bool res = (ret == v.end());
+  res = res && (v.getSize() == 1);
 
   return res;
 }
@@ -509,13 +510,12 @@ bool testEraseIteratorReturn()
 bool testRemoveIfEven()
 {
   topit::Vector< int > v{6, 1};
-  v[1] = 2;
-  v[3] = 4;
-  v[5] = 6;
+  v[0] = 2;
   
   v.remove_if([](int x) { return x % 2 == 0; });
 
-  topit::Vector< int > yav{3, 1};
+  topit::Vector< int > yav{1};
+  yav[0] = 1;
   
   return v == yav;
 }
@@ -526,6 +526,12 @@ bool testRemoveIfAll()
   v.remove_if([](int x) { return x % 2 == 0; });
   
   return v.isEmpty();
+}
+
+bool testInitializerList()
+{
+  topit::Vector< int > v{1, 2};
+  return v.getSize() == 2 && v[0] == 1 && v[1] == 2;
 }
 
 int main()
@@ -574,6 +580,7 @@ int main()
     { "Erase iterator return", testEraseIteratorReturn },
     { "Remove if even", testRemoveIfEven },
     { "Remove if all", testRemoveIfAll },
+    { "Non-empty vector for non-empty initializer list", testInitializerList }
   };
 
   const size_t count = sizeof(tests) / sizeof(test_t);

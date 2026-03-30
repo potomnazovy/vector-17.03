@@ -26,6 +26,8 @@ namespace topit
     Vector< T >& operator=(const Vector< T >&);
     Vector< T >& operator=(Vector< T >&&) noexcept;
 
+    explicit Vector(std::initializer_list< T > il);
+
     iterator begin() noexcept;
     iterator end() noexcept;
     const_iterator begin() const noexcept;
@@ -74,6 +76,18 @@ namespace topit
   };
   template< class T >
   bool operator==(const Vector< T >& lhs, const Vector< T >& rhs);
+}
+
+template< class T >
+topit::Vector< T >::Vector(std::initializer_list< T > il):
+  Vector(il.size())
+{
+  size_t i = 0;
+  for (auto it = il.begin(); it != il.end(); ++it)
+  {
+    new(&data_[i++]) T(*it);
+  }
+  size_ = il.size();
 }
 
 template< class T >
