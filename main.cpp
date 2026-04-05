@@ -567,6 +567,41 @@ bool testReserveIncrease()
   return res && v[0] == 5 && v[1] == 2;
 }
 
+bool testShrinkToFitNoChange()
+{
+  topit::Vector< int > v{2, 5};
+
+  v.shrinkToFit();
+
+  bool res = (v.getCapacity() == v.getSize());
+  res = res && (v.getSize() == 2);
+
+  return res;
+}
+
+bool testShrinkToFitReduce()
+{
+  topit::Vector< int > v{5, 2};
+
+  v.reserve(10);
+  v.shrinkToFit();
+
+  bool res = (v.getCapacity() == 2);
+  res = res && (v.getSize() == 2);
+  res = res && (v[0] == 5 && v[1] == 2);
+
+  return res;
+}
+
+bool testShrinkToFitEmpty()
+{
+  topit::Vector< int > v;
+  
+  v.shrinkToFit();
+  
+  return v.isEmpty() && (v.getCapacity() == 0);
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
