@@ -82,6 +82,7 @@ namespace topit
 
     void unsafePushBack(const T& value);
   };
+
   template< class T >
   bool operator==(const Vector< T >& lhs, const Vector< T >& rhs);
 }
@@ -246,6 +247,19 @@ template< class T >
 size_t topit::Vector< T >::getCapacity() const noexcept
 {
   return cap_;
+}
+
+template< class T >
+void topit::Vector< T >::reserve(size_t k)
+{
+  if (k <= cap_)
+  {
+    return;
+  }
+
+  Vector< T > tmp = *this;
+  tmp.grow(k);
+  swap(tmp);
 }
 
 template< class T >
