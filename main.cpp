@@ -637,6 +637,57 @@ bool testPushBackCountGrow()
   return res;
 }
 
+bool testPushBackRangeZero()
+{
+  topit::Vector< int > v{3, 5};
+  int arr[] = {1, 2, 3};
+  
+  v.pushBackRange(arr, 0);
+  
+  return v.getSize() == 2;
+}
+
+bool testPushBackRangeFromArray()
+{
+  topit::Vector< int > v{3, 5};
+  int arr[] = {10, 20, 30};
+  
+  v.pushBackRange(arr, 3);
+
+  bool res = (v.getSize() == 5);
+  res = res && (v[0] == 3 && v[1] == 5);
+  res = res && (v[2] == 10 && v[3] == 20 && v[4] == 30);
+  
+  return res;
+}
+
+bool testPushBackRangeFromVector()
+{
+  topit::Vector< int > v{3, 5};
+  topit::Vector< int > src{10, 20};
+  
+  v.pushBackRange(src.begin(), src.getSize());
+
+  bool res = (v.getSize() == 4);
+  res = res && (v[2] == 10 && v[3] == 20);
+  
+  return res;
+}
+
+bool testPushBackRangeGrow()
+{
+  topit::Vector<int> v{2, 5};
+  int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  
+  v.pushBackRange(arr, 10);
+  
+  bool res = (v.getSize() == 12);
+  res = res && (v.getCapacity() >= 12);
+  res = res && (v[11] == 10);
+  
+  return res;
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
