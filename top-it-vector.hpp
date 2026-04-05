@@ -46,6 +46,7 @@ namespace topit
     void pushBackCount(size_t k, const T& value);
     template< class IT >
     void pushBackRange(IT b, size_t c);
+    void unsafePushBack(const T& value);
 
     T& operator[](size_t id) noexcept;
     const T& operator[](size_t id) const noexcept;
@@ -79,8 +80,6 @@ namespace topit
     explicit Vector(size_t size);
     void destroyAll() noexcept;
     void grow(size_t new_cap);
-
-    void unsafePushBack(const T& value);
   };
 
   template< class T >

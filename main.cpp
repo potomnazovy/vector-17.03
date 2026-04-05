@@ -688,6 +688,35 @@ bool testPushBackRangeGrow()
   return res;
 }
 
+bool testUnsafePushBackBasic()
+{
+  topit::Vector< int > v{3, 5};
+  
+  v.reserve(5);
+  v.unsafePushBack(99);
+  
+  bool res = (v.getSize() == 3);
+  res = res && (v[2] == 99);
+  
+  return res;
+}
+
+bool testUnsafePushBackMultiple()
+{
+  topit::Vector< int > v{2, 5};
+  
+  v.reserve(5);
+  v.unsafePushBack(1);
+  v.unsafePushBack(2);
+  v.unsafePushBack(3);
+
+  bool res = (v.getSize() == 5);
+  res = res && (v[0] == 5 && v[1] == 5);
+  res = res && (v[2] == 1 && v[3] == 2 && v[4] == 3);
+  
+  return res;
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
