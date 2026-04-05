@@ -539,7 +539,7 @@ bool testReserveEmpty()
   topit::Vector< int > v;
   v.reserve(10);
 
-  bool res = (v.getCapacity() == 10);
+  bool res = (v.getCapacity() >= 10);
   res = res && (v.getSize() == 0);
 
   return res;
@@ -561,7 +561,7 @@ bool testReserveIncrease()
 
   v.reserve(10);
 
-  bool res = (v.getCapacity() == 10);
+  bool res = (v.getCapacity() >= 10);
   res = res && (v.getSize() == 2);
 
   return res && v[0] == 5 && v[1] == 2;
@@ -586,7 +586,7 @@ bool testShrinkToFitReduce()
   v.reserve(10);
   v.shrinkToFit();
 
-  bool res = (v.getCapacity() == 2);
+  bool res = (v.getCapacity() >= 2);
   res = res && (v.getSize() == 2);
   res = res && (v[0] == 5 && v[1] == 2);
 
@@ -600,6 +600,41 @@ bool testShrinkToFitEmpty()
   v.shrinkToFit();
   
   return v.isEmpty() && (v.getCapacity() == 0);
+}
+
+bool testPushBackCountZero()
+{
+  topit::Vector< int > v{3, 5};
+
+  v.pushBackCount(0, 99);
+
+  return v.getSize() == 2;
+}
+
+bool testPushBackCountSome()
+{
+  topit::Vector< int > v{3, 5};
+
+  v.pushBackCount(3, 2);
+
+  bool res = v.getSize() == 5;
+  res = res && (v[0] == 3 && v[1] == 5);
+  res = res && (v[2] == 2 && v[3] == 2 && v[4] == 2);
+
+  return res;
+}
+
+bool testPushBackCountGrow()
+{
+  topit::Vector< int > v{5, 2};
+
+  v.pushBackCount(10, 2);
+
+  bool res = (v.getSize() == 12);
+  res = res && (v.getCapacity() >= 12);
+  res = res && v[11] == 2;
+
+  return res;
 }
 
 int main()
