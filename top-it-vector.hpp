@@ -308,9 +308,10 @@ void topit::Vector< T >::pushBackCount(size_t k, const T& value)
 
   Vector< T > tmp = *this;
 
-  if (tmp.size_ == tmp.cap_)
+  if (tmp.size_ + k > tmp.cap_)
   {
-    size_t new_cap = (cap_ == 0) ? 1 : std::max(tmp.size_ + k, tmp.cap_ * 2);
+    size_t new_cap = (tmp.cap_ == 0) ? k : std::max(tmp.size_ + k, tmp.cap_ * 2);
+    tmp.grow(new_cap);
   }
 
   for (size_t i = 0; i < k; ++i)
@@ -326,7 +327,27 @@ template< class T >
 template< class IT >
 void topit::Vector< T >::pushBackRange(IT b, size_t c)
 {
+  if (c == 0)
+  {
+    return;
+  }
 
+  Vector< T > tmp = *this;
+
+  if (tmp.size_ + c > tmp.cap_)
+  {
+    size_t new_cap = (tmp.cap_ == 0) ? c : std::max(tmp.size_ + c, tmp.cap_ * 2);
+    tmp.grow(new_cap);
+  }
+
+  for (size_t i = 0; i < c; ++i)
+  {
+    new (&tmp.data_[tmp.size_ + i]) T(std::move(*b));
+    ++b;
+  }
+
+  tmp.size_ += c;
+  swap(tmp);
 }
 
 template< class T >
