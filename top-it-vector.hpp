@@ -263,6 +263,42 @@ void topit::Vector< T >::reserve(size_t k)
 }
 
 template< class T >
+void topit::Vector< T >::shrinkToFit()
+{
+  if (size_ < cap_)
+  {
+    T* new_data = static_cast< T* >(operator new(sizeof(T) * size_));
+    size_t constructed = 0;
+    try
+    {
+      for (size_t i = 0; i < size_; ++i)
+      {
+        new (&new_data[i]) T(std::move(data_[i]));
+        ++constructed;
+      }
+
+      for (size_t i = 0; i < size_; ++i)
+      {
+        data_[i].~T();
+      }
+
+      operator delete(data_);
+      data_ = new_data;
+      cap_ = size_;
+    }
+    catch(...)
+    {
+      for (size_t i = 0; i < constructed; ++i)
+      {
+        new_data[i].~T();
+      }
+      operator delete(new_data);
+      throw;
+    }
+  }
+}
+
+template< class T >
 T& topit::Vector< T >::operator[](size_t id) noexcept
 {
   const Vector< T >* cthis = this;
