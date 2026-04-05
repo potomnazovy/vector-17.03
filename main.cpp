@@ -534,6 +534,39 @@ bool testInitializerList()
   return v.getSize() == 2 && v[0] == 1 && v[1] == 2;
 }
 
+bool testReserveEmpty()
+{
+  topit::Vector< int > v;
+  v.reserve(10);
+
+  bool res = (v.getCapacity() == 10);
+  res = res && (v.getSize() == 0);
+
+  return res;
+}
+
+bool testReserveNoChange()
+{
+  topit::Vector< int > v{5, 2};
+  size_t old_cap = v.getCapacity();
+
+  v.reserve(2);
+
+  return v.getCapacity() == old_cap;
+}
+
+bool testReserveIncrease()
+{
+  topit::Vector< int > v{5, 2};
+
+  v.reserve(10);
+
+  bool res = (v.getCapacity() == 10);
+  res = res && (v.getSize() == 2);
+
+  return res && v[0] == 5 && v[1] == 2;
+}
+
 int main()
 {
   using test_t = std::pair< const char *, bool(*)() >;
