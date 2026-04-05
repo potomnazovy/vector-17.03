@@ -351,6 +351,13 @@ void topit::Vector< T >::pushBackRange(IT b, size_t c)
 }
 
 template< class T >
+void topit::Vector< T >::unsafePushBack(const T& value)
+{
+  new(&data_[size_]) T(value);
+  ++size_;
+}
+
+template< class T >
 T& topit::Vector< T >::operator[](size_t id) noexcept
 {
   const Vector< T >* cthis = this;
