@@ -41,6 +41,12 @@ namespace topit
     size_t getSize() const noexcept;
     size_t getCapacity() const noexcept;
 
+    void reserve(size_t k);
+    void shrinkToFit();
+    void pushBackCount(size_t k, const T& value);
+    template< class IT >
+    void pushBackRange(IT b, size_t c);
+
     T& operator[](size_t id) noexcept;
     const T& operator[](size_t id) const noexcept;
     T& at(size_t id);
@@ -73,6 +79,8 @@ namespace topit
     explicit Vector(size_t size);
     void destroyAll() noexcept;
     void grow(size_t new_cap);
+
+    void unsafePushBack(const T& value);
   };
   template< class T >
   bool operator==(const Vector< T >& lhs, const Vector< T >& rhs);
