@@ -763,7 +763,22 @@ int main()
     { "Erase iterator return", testEraseIteratorReturn },
     { "Remove if even", testRemoveIfEven },
     { "Remove if all", testRemoveIfAll },
-    { "Non-empty vector for non-empty initializer list", testInitializerList }
+    { "Non-empty vector for non-empty initializer list", testInitializerList },
+    { "Reserve empty", testReserveEmpty },
+    { "Reserve no change", testReserveNoChange },
+    { "Reserve increase", testReserveIncrease },
+    { "Shrink to fit no change", testShrinkToFitNoChange },
+    { "Shrink to fit reduce", testShrinkToFitReduce },
+    { "Shrink to fit empty", testShrinkToFitEmpty },
+    { "Push back count zero", testPushBackCountZero },
+    { "Push back count some", testPushBackCountSome },
+    { "Push back count grow", testPushBackCountGrow },
+    { "Push back range zero", testPushBackRangeZero },
+    { "Push back range from array", testPushBackRangeFromArray },
+    { "Push back range from vector", testPushBackRangeFromVector },
+    { "Push back range grow", testPushBackRangeGrow },
+    { "Unsafe push back basic", testUnsafePushBackBasic },
+    { "Unsafe push back multiple", testUnsafePushBackMultiple },
   };
 
   const size_t count = sizeof(tests) / sizeof(test_t);
