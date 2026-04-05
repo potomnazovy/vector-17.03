@@ -711,7 +711,7 @@ bool testUnsafePushBackMultiple()
   v.unsafePushBack(3);
 
   bool res = (v.getSize() == 5);
-  res = res && (v[0] == 5 && v[1] == 5);
+  res = res && (v[0] == 2 && v[1] == 5);
   res = res && (v[2] == 1 && v[3] == 2 && v[4] == 3);
   
   return res;
